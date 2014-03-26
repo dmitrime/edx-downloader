@@ -282,8 +282,8 @@ def main():
     courseware = get_page_contents(COURSEWARE, headers)
     soup = BeautifulSoup(courseware)
 
-    data = soup.find("section",
-                     {"class": "content-wrapper"}).section.div.div.nav
+    data = soup.find("nav",
+                     {"aria-label": "Course Navigation"})
     WEEKS = data.find_all('div')
     weeks = [(w.h3.a.string, [BASE_URL + a['href'] for a in
              w.ul.find_all('a')]) for w in WEEKS]
@@ -309,7 +309,7 @@ def main():
 
     video_id = []
     subsUrls = []
-    regexpSubs = re.compile(r'data-caption-asset-path=(?:&#34;|")([^"&]*)(?:&#34;|")')
+    regexpSubs = re.compile(r'data-transcript-translation-url=(?:&#34;|")([^"&]*)(?:&#34;|")')
     splitter = re.compile(r'data-streams=(?:&#34;|").*1.0[0]*:')
     extra_youtube = re.compile(r'//w{0,3}\.youtube.com/embed/([^ \?&]*)[\?& ]')
     for link in links:
@@ -351,7 +351,7 @@ def main():
         target_dir = os.path.join(args.output_dir,
                                   directory_name(selected_course[0]))
         filename_prefix = str(c).zfill(2)
-        cmd = ["youtube-dl",
+        cmd = ["youtube-dl", "-f", "18",
                "-o", os.path.join(target_dir, filename_prefix + "-%(title)s.%(ext)s")]
         if args.format:
             cmd.append("-f")
